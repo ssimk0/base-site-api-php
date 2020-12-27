@@ -19,11 +19,23 @@ class PageController extends Controller
             return response()->json([], 404);
         }
 
-        $pageArray = $page->toArray();
+        return response()->json($page->with(['parent', 'children'])->where("id", $page->id)->first());
+    }
+    // TODO: finish create
+    public function create(Request $request) {
 
-        $pageArray["children"] = $page->children();
-        $pageArray["parent"] = $page->parent();
+    }
+    // TODO: finish update
+    public function update(Page $page, Request $request) {
 
-        return response()->json($pageArray);
+    }
+
+    public function delete(Page $page) {
+        try {
+            $page->delete();
+        } catch (\Exception $e) {
+            $this->logCritical("problem with delete page: " . $e->getMessage());
+        }
+        return response()->json();
     }
 }

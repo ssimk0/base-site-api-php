@@ -18,8 +18,10 @@ Route::group([
 
 
     Route::put('v1/pages/{category}/{page}', [PageController::class, 'update']);
+    Route::put('v1/pages/{page:id}', [PageController::class, 'update']);
     Route::post('v1/pages/{category}', [PageController::class, 'create']);
     Route::delete('v1/pages/{category}/{page}', [PageController::class, 'delete']);
+    Route::delete('v1/pages/{page:id}', [PageController::class, 'delete']);
 });
 
 Route::get('v1/pages', [PageCategoryController::class, 'list']);
