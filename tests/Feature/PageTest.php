@@ -83,4 +83,119 @@ class PageTest extends TestCase
 
     //TODO: create, update, delete tests
 
+    function test_page_create()
+    {
+        $pageCategory = PageCategory::factory()->createOne();
+        $page = Page::factory()->makeOne();
+
+        $token = $this->loginUser(true);
+
+        $response = $this->postJson("/api/v1/pages/".$pageCategory->slug, [
+            "title" => $page->title,
+            "body" => $page->body
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(201)->assertJsonFragment([
+            "title" => $page->title,
+            "body" => $page->body,
+            "success" => true,
+        ]);
+
+       $id = $response->json("id");
+       // check is is persisted to DB
+       $p = Page::find($id);
+
+       $this->assertEquals($p->title, $page->title);
+    }
+
+    function test_page_update_by_id()
+    {
+        $page = Page::factory()->createOne();
+
+        $token = $this->loginUser(true);
+        $newTitle = $this->faker->title;
+
+        $response = $this->putJson("/api/v1/pages/". $page->id , [
+            "title" => $newTitle,
+            "body" => $page->body
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            "success" => true,
+        ]);
+
+        // check is is persisted to DB
+        $p = Page::find($page->id);
+
+        $this->assertEquals($p->title, $newTitle);
+    }
+
+    function test_page_update_by_slug()
+    {
+        $page = Page::factory()->createOne();
+
+        $token = $this->loginUser(true);
+        $newTitle = $this->faker->title;
+
+        $response = $this->putJson("/api/v1/pages/". $page->page_category->slug .'/'. $page->slug , [
+            "title" => $newTitle,
+            "body" => $page->body
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            "success" => true,
+        ]);
+
+        // check is is persisted to DB
+        $p = Page::find($page->id);
+
+        $this->assertEquals($p->title, $newTitle);
+    }
+
+    function test_page_delete_by_slug()
+    {
+        $page = Page::factory()->createOne();
+
+        $token = $this->loginUser(true);
+
+        $response = $this->deleteJson("/api/v1/pages/" . $page->page_category->slug . '/' . $page->slug, [], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            "success" => true,
+        ]);
+
+        // check is is persisted to DB
+        $p = Page::find($page->id);
+
+        $this->assertNull($p);
+    }
+
+
+        function test_page_delete_by_id()
+    {
+        $page = Page::factory()->createOne();
+
+        $token = $this->loginUser(true);
+
+        $response = $this->deleteJson("/api/v1/pages/". $page->id , [], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            "success" => true,
+        ]);
+
+        // check is is persisted to DB
+        $p = Page::find($page->id);
+
+        $this->assertNull($p);
+    }
 }

@@ -9,6 +9,7 @@ class Page extends Model
 {
     use HasFactory;
     protected $with = ["page_category"];
+    protected $guarded = [];
     protected $hidden = ["page_id", "user_id", "page_category_id"];
 
     public function page_category() {
