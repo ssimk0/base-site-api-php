@@ -50,13 +50,11 @@ class PageController extends Controller
             "page_id" => "integer",
         ]);
 
-
         $page = new Page($data);
         $page->page_category_id = $category->id;
         $page->user_id = auth()->user()->id;
         $page->slug =  $slugify->slugify($page->title);
         $page->save();
-
 
         return $this->successResponse($page->toArray(), 201);
     }

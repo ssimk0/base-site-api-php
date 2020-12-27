@@ -81,8 +81,6 @@ class PageTest extends TestCase
         $response->assertStatus(404);
     }
 
-    //TODO: create, update, delete tests
-
     function test_page_create()
     {
         $pageCategory = PageCategory::factory()->createOne();

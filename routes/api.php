@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageCategoryController;
 use App\Http\Controllers\PageController;
@@ -22,8 +23,15 @@ Route::group([
     Route::post('v1/pages/{category}', [PageController::class, 'create']);
     Route::delete('v1/pages/{category}/{page}', [PageController::class, 'delete']);
     Route::delete('v1/pages/{page:id}', [PageController::class, 'delete']);
+
+    Route::post("v1/articles", [ArticleController::class, 'create']);
+    Route::put("v1/articles/{article}", [ArticleController::class, 'update']);
+    Route::delete("v1/articles/{article}", [ArticleController::class, 'delete']);
 });
 
 Route::get('v1/pages', [PageCategoryController::class, 'list']);
 Route::get('v1/pages/{category}', [PageController::class, 'list']);
 Route::get('v1/pages/{category}/{page}', [PageController::class, 'detail']);
+
+Route::get('v1/articles', [ArticleController::class, 'list']);
+Route::get('v1/articles/{article:slug}', [ArticleController::class, 'detail']);
