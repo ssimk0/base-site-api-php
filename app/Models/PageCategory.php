@@ -9,7 +9,12 @@ class PageCategory extends Model
 {
     use HasFactory;
 
-    public function pages() {
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     *
+     * @psalm-return \Illuminate\Database\Eloquent\Relations\HasMany<Page>
+     */
+    public function pages(): \Illuminate\Database\Eloquent\Relations\HasMany {
         return $this->hasMany(Page::class);
     }
 

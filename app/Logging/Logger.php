@@ -8,32 +8,32 @@ use Illuminate\Support\Facades\Request;
 
 trait Logger
 {
-    public function logEmergency($message, array $context = [])
+    public function logEmergency($message, array $context = []): void
     {
         $this->log('emergency', $message, $context);
     }
 
-    public function logAlert($message, array $context = [])
+    public function logAlert($message, array $context = []): void
     {
         $this->log('alert', $message, $context);
     }
 
-    public function logError($message, array $context = [])
+    public function logError($message, array $context = []): void
     {
         $this->log('error', $message, $context);
     }
 
-    public function logNotice($message, array $context = [])
+    public function logNotice($message, array $context = []): void
     {
         $this->log('notice', $message, $context);
     }
 
-    public function logInfo($message, array $context = [])
+    public function logInfo($message, array $context = []): void
     {
         $this->log('info', $message, $context);
     }
 
-    public function logDebug($message, array $context = [])
+    public function logDebug($message, array $context = []): void
     {
         $this->log('debug', $message, $context);
     }
@@ -60,7 +60,7 @@ trait Logger
         ), $context);
     }
 
-    public static function logAny($level, $message, array $context = [])
+    public static function logAny($level, $message, array $context = []): void
     {
         Log::log($level, sprintf(
             '%s - - [%s] "%s %s %s" - %s',
@@ -73,12 +73,12 @@ trait Logger
         ), $context);
     }
 
-    public function logCritical($message, array $context = [])
+    public function logCritical($message, array $context = []): void
     {
         $this->log('critical', $message, $context);
     }
 
-    public function logWarning($message, array $context = [])
+    public function logWarning($message, array $context = []): void
     {
         $this->log('warning', $message, $context);
     }

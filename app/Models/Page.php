@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Page extends Model
 {
@@ -12,15 +15,30 @@ class Page extends Model
     protected $guarded = [];
     protected $hidden = ["page_id", "user_id", "page_category_id"];
 
-    public function page_category() {
+    /**
+     * @return BelongsTo
+     *
+     * @psalm-return BelongsTo<PageCategory>
+     */
+    public function page_category(): BelongsTo {
         return $this->belongsTo(PageCategory::class, 'page_category_id');
     }
 
-    public function children() {
+    /**
+     * @return HasMany
+     *
+     * @psalm-return HasMany<self>
+     */
+    public function children(): HasMany {
         return $this->hasMany(Page::class, 'page_id');
     }
 
-    public function parent() {
+    /**
+     * @return Builder
+     *
+     * @psalm-return Builder<self>
+     */
+    public function parent(): Builder {
         return $this->belongsTo(Page::class, 'page_id')->with("children");
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ForgotPassword;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,9 +27,9 @@ class AuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
             'email' => 'required|email',
@@ -47,16 +48,19 @@ class AuthController extends Controller
     /**
      * Get the authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function userInfo()
+    public function userInfo(): JsonResponse
     {
         $user = auth()->user();
 
         return response()->json($user);
     }
 
-    public function forgotPassword(Request $request)
+    /**
+     * @return JsonResponse
+     */
+    public function forgotPassword(Request $request): JsonResponse
     {
         $data = $request->validate([
             'email' => 'required|email'
@@ -65,7 +69,7 @@ class AuthController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         if (!$user) {
-            return response('', 404);
+            return response()->json([], 404);
         }
         $token = Str::random(60);
 
@@ -80,7 +84,7 @@ class AuthController extends Controller
         return $this->successResponse();
     }
 
-    public function resetPassword(Request $request, $token)
+    public function resetPassword(Request $request, $token): JsonResponse
     {
         $data = $request->validate([
             'password' => 'required|min:6|max:32|confirmed'
@@ -111,9 +115,9 @@ class AuthController extends Controller
     /**
      * Log the user out (Invalidate the token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         Auth::logout();
 
@@ -123,14 +127,14 @@ class AuthController extends Controller
     /**
      * Refresh a token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return $this->respondWithToken(Auth::refresh());
     }
 
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
             'email' => 'required|email|max:255',
@@ -146,7 +150,7 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
 
         try {
-            $user = User::create($data);
+            User::create($data);
         } catch (\Exception $e) {
             $this->logDebug('Error while registration user: ' . $e->getMessage());
             return response()->json([], 500);
@@ -159,9 +163,9 @@ class AuthController extends Controller
      *
      * @param  string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token): JsonResponse
     {
         return response()->json([
             'token' => $token,

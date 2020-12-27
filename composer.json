@@ -16,6 +16,7 @@
         "intervention/image": "^2.5",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
+        "sentry/sentry-laravel": "^2.3",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {

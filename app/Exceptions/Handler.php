@@ -2,11 +2,14 @@
 
 namespace App\Exceptions;
 
+use App\Logging\Logger;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use Logger;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -26,15 +29,19 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
-     * Register the exception handling callbacks for the application.
-     *
-     * @return void
-     */
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            $this->logDebug($e->getMessage());
         });
+    }
+
+    function report(Throwable $e)
+    {
+        if ($this->shouldReport($e) && app()->bound('sentry')) {
+            app('sentry')->captureException($e);
+        }
+
+        parent::report($e);
     }
 }
