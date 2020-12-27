@@ -10,7 +10,8 @@ class ArticleController extends Controller
 {
     public function list(Request $request) {
         $size = $request->query("s");
-        $paginator = Article::paginate($size, "*", "p");
+        $size = intval($size);
+        $paginator = Article::where("published", true)->paginate($size, "*", "p");
 
         return response()->json([
             "articles" => $paginator->items(),
@@ -22,6 +23,8 @@ class ArticleController extends Controller
     }
 
     public function detail(Article $article) {
+        if (!$article->published) return response()->json([], 404);
+
         return response()->json($article);
     }
 

@@ -50,5 +50,6 @@ class CreatePagesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('pages');
+        Schema::dropIfExists('page_categories');
     }
 }

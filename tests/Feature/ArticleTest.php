@@ -3,10 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
-use Cocur\Slugify\Slugify;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class ArticleTest extends TestCase
@@ -16,21 +14,36 @@ class ArticleTest extends TestCase
 
     function test_articles_list()
     {
-        Article::factory(10)->create();
+        Article::factory(10)->create(["published" => true]);
 
         $response = $this->getJson("/api/v1/articles?s=5&p=2");
 
         $response->assertStatus(200)->assertJsonFragment([
             "page" => 2,
-            "page_size" => "5",
+            "page_size" => 5,
             "total" => 10,
             "total_pages" => 2
         ]);
     }
 
+    function test_articles_list_unpublished()
+    {
+        Article::factory(5)->create(["published" => false]);
+
+        $response = $this->getJson("/api/v1/articles?s=5");
+
+        $response->assertStatus(200)->assertJsonFragment([
+            "page" => 1,
+            "page_size" => 5,
+            "total" => 0,
+            "total_pages" => 1
+        ]);
+
+    }
+
     function test_article_detail()
     {
-        $article = Article::factory()->createOne();
+        $article = Article::factory()->createOne(["published" => true]);
 
         $response = $this->getJson("/api/v1/articles/" . $article->slug);
 
@@ -40,6 +53,16 @@ class ArticleTest extends TestCase
             "slug" => $article->slug,
             "body" => $article->body,
         ]);
+    }
+
+
+    function test_article_detail_unpublished()
+    {
+        $article = Article::factory()->createOne(["published" => false]);
+
+        $response = $this->getJson("/api/v1/articles/" . $article->slug);
+
+        $response->assertStatus(404);
     }
 
     function test_article_create()
