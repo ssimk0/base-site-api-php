@@ -34,11 +34,11 @@ class Page extends Model
     }
 
     /**
-     * @return Builder
+     * @return BelongsTo
      *
-     * @psalm-return Builder<self>
+     * @psalm-return BelongsTo<self>
      */
-    public function parent(): Builder {
+    public function parent(): BelongsTo {
         return $this->belongsTo(Page::class, 'page_id')->with("children");
     }
 
