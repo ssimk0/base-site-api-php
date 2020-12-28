@@ -8,6 +8,6 @@ class UploadTypeController extends Controller
 {
     function list(UploadType $type)
     {
-        return response()->json($type->categories);
+        return response()->json($type->categories()->latest()->get());
     }
 }
