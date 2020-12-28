@@ -64,6 +64,23 @@ class AuthTest extends TestCase
         ]);
     }
 
+
+    public function test_login_wrong_password()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'wrongpassword',
+        ]);
+
+        $response->assertStatus(401);
+
+        $response->assertJsonFragment([
+            'error' => 'Unauthorized'
+        ]);
+    }
+
     public function test_forgot_password()
     {
         $user = User::factory()->create();
@@ -105,6 +122,37 @@ class AuthTest extends TestCase
         ]);
     }
 
+
+    public function test_refersh()
+    {
+        $user = User::factory()->create();
+
+        $token = Auth::login($user);
+
+        $response = $this->postJson('/api/v1/auth/refresh', [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            'token_type' => 'bearer'
+        ]);
+    }
+
+    public function test_logout()
+    {
+        $user = User::factory()->create();
+
+        $token = Auth::login($user);
+
+        $response = $this->postJson('/api/v1/auth/logout', [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            'message' => 'Successfully logged out'
+        ]);
+    }
+
     public function test_reset_password()
     {
         $user = User::factory()->create();
@@ -122,6 +170,19 @@ class AuthTest extends TestCase
         $response->assertStatus(200)->assertJson([
             'success' => true
         ]);
+    }
+
+    public function test_reset_password_wrong_email()
+    {
+        $token = Str::random(30);
+
+        $response = $this->postJson('/api/v1/auth/reset-password/' . $token, [
+            'password' => 'test1234',
+            'password_confirmation' => 'test1234'
+        ]);
+
+        $response->assertStatus(404);
+
     }
 
     public function test_reset_password_wrong_token()

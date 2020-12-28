@@ -58,20 +58,23 @@ class UploadController extends Controller
     public function store(UploadType $type, UploadCategory $category, Request $request)
     {
         $data = $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'file' => 'required|file',
             'description' => 'string|min:3|max:255'
         ]);
 
-        $images = $this->storeImage($request);
+        $files = $this->storeFile($request);
+
         $typeSlug = $type->slug;
         $categorySlug = $category->slug;
 
-        Storage::put("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$images["filename"], $images["file"]->__toString(), 'public');
-        Storage::put("{$typeSlug}/{$categorySlug}/".self::SMALL."/".$images["filename"], $images["thumb"]->__toString(), 'public');
+        Storage::put("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"], $files["file"]->__toString(), 'public');
+        if (Arr::has($files, "thumb")) {
+            Storage::put("{$typeSlug}/{$categorySlug}/" . self::SMALL . "/" . $files["filename"], $files["thumb"]->__toString(), 'public');
+        }
 
         $upload = new Upload([
-            "file" => Storage::url("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$images["filename"]),
-            "thumbnail" => Storage::url("{$typeSlug}/{$categorySlug}/".self::SMALL."/".$images["filename"]),
+            "file" => Storage::url("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"]),
+            "thumbnail" => Arr::has($files, "thumb") ? Storage::url("{$typeSlug}/{$categorySlug}/".self::SMALL."/".$files["filename"]) : null,
             "description" => Arr::get($data, 'description', ''),
             "category_id" => $category->id,
         ]);
@@ -91,10 +94,11 @@ class UploadController extends Controller
      * @param mixed $request
      * @author Niklas Fandrich
      */
-    protected function storeImage($request)
+    protected function storeFile($request)
     {
         // Get file from request
         $file = $request->file('file');
+        $is_image = false;
 
         // Get filename with extension
         $filename = Str::random(15);
@@ -102,11 +106,23 @@ class UploadController extends Controller
         // Get the original image extension
         $extension = $file->getClientOriginalExtension();
 
+        if (in_array($extension, ["jpg", "jpeg", "png", "svg", "gif"])) {
+            $is_image = true;
+        }
+
         // Create unique file name
         $fileNameToStore = $filename . '_' . time() . '.' . $extension;
 
+        $files = [
+            "file" => $file
+        ];
+
+        if ($is_image) {
+            $files = $this->resizeImage($file, $fileNameToStore);
+        }
+
         // Refer image to method resizeImage
-        return array_merge($this->resizeImage($file, $fileNameToStore), ["filename" => $fileNameToStore]);
+        return array_merge($files, ["filename" => $fileNameToStore]);
     }
 
     /**

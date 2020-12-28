@@ -8,7 +8,10 @@ use App\Models\UploadCategory;
 use App\Models\UploadType;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class UploadTest extends TestCase
 {
@@ -20,7 +23,7 @@ class UploadTest extends TestCase
         $type = UploadType::factory()->createOne();
         UploadCategory::factory(5)->create(["type_id" => $type->id]);
 
-        $response = $this->getJson("/api/v1/uploads/".$type->slug);
+        $response = $this->getJson("/api/v1/uploads/" . $type->slug);
 
         $response->assertStatus(200)->assertJsonCount(5);
     }
@@ -32,7 +35,7 @@ class UploadTest extends TestCase
         $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
         Upload::factory(10)->create(["category_id" => $category->id]);
 
-        $response = $this->getJson("/api/v1/uploads/".$type->slug."/".$category->slug."?s=5&p=2");
+        $response = $this->getJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "?s=5&p=2");
 
         $response->assertStatus(200)->assertJsonFragment([
             "total" => 10,
@@ -42,20 +45,18 @@ class UploadTest extends TestCase
     }
 
 
-
     function test_upload_detail()
     {
         $type = UploadType::factory()->createOne();
         $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
         $upload = Upload::factory()->createOne(["category_id" => $category->id]);
 
-        $response = $this->getJson("/api/v1/uploads/".$type->slug."/".$category->slug."/".$upload->id);
+        $response = $this->getJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "/" . $upload->id);
 
         $response->assertStatus(200)->assertJsonFragment([
             "file" => $upload->file
         ]);
     }
-
 
 
     function test_upload_update()
@@ -66,7 +67,7 @@ class UploadTest extends TestCase
         $token = $this->loginUser(true);
 
         $newDesc = $this->faker->sentence;
-        $response = $this->putJson("/api/v1/uploads/".$type->slug."/".$category->slug."/".$upload->id, [
+        $response = $this->putJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "/" . $upload->id, [
             "description" => $newDesc,
         ], [
             'Authorization' => 'Bearer ' . $token
@@ -82,6 +83,57 @@ class UploadTest extends TestCase
     }
 
 
+    function test_upload_latest()
+    {
+        $type = UploadType::factory()->createOne();
+        $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
+        Upload::factory()->createOne(["category_id" => $category->id]);
+        $token = $this->loginUser(true);
+        Http::fake([
+            '*' => Http::response('Hello World', 200, ['Headers']),
+        ]);
+
+        $response = $this->get("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "/latest", [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    function test_upload_download()
+    {
+        $type = UploadType::factory()->createOne();
+        $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
+        $upload = Upload::factory()->createOne(["category_id" => $category->id]);
+        $token = $this->loginUser(true);
+        Http::fake([
+            '*' => Http::response('Hello World', 200, ['Headers']),
+        ]);
+
+        $response = $this->get("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "/" . $upload->id . "/download", [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    function test_upload_download_wrong_url()
+    {
+        $type = UploadType::factory()->createOne();
+        $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
+        Upload::factory()->createOne(["category_id" => $category->id]);
+        $token = $this->loginUser(true);
+        Http::fake([
+            '*' => Http::response('Hello World', 500, ['Headers']),
+        ]);
+
+        $response = $this->get("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "/latest", [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(404);
+    }
+
 
     function test_upload_delete()
     {
@@ -91,7 +143,7 @@ class UploadTest extends TestCase
         $token = $this->loginUser(true);
 
         $newDesc = $this->faker->sentence;
-        $response = $this->deleteJson("/api/v1/uploads/".$type->slug."/".$category->slug."/".$upload->id, [
+        $response = $this->deleteJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug . "/" . $upload->id, [
             "description" => $newDesc,
         ], [
             'Authorization' => 'Bearer ' . $token
@@ -113,12 +165,12 @@ class UploadTest extends TestCase
         $category = UploadCategory::factory()->makeOne(["type_id" => $type->id]);
         $token = $this->loginUser(true);
 
-        $response = $this->postJson("/api/v1/uploads/".$type->slug."/", [
+        $response = $this->postJson("/api/v1/uploads/" . $type->slug . "/", [
             "description" => $category->description,
             "name" => $category->name,
             "subpath" => $category->subpath,
         ], [
-             'Authorization' => 'Bearer ' . $token
+            'Authorization' => 'Bearer ' . $token
         ]);
 
         $response->assertStatus(201)->assertJsonFragment([
@@ -134,10 +186,10 @@ class UploadTest extends TestCase
         $token = $this->loginUser(true);
 
         $newDesc = $this->faker->sentence;
-        $response = $this->putJson("/api/v1/uploads/".$type->slug."/".$category->id, [
+        $response = $this->putJson("/api/v1/uploads/" . $type->slug . "/" . $category->id, [
             "description" => $newDesc
         ], [
-             'Authorization' => 'Bearer ' . $token
+            'Authorization' => 'Bearer ' . $token
         ]);
 
         $response->assertStatus(200)->assertJsonFragment([
@@ -155,8 +207,8 @@ class UploadTest extends TestCase
         $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
 
         $token = $this->loginUser(true);
-        $response = $this->deleteJson("/api/v1/uploads/".$type->slug."/".$category->id, [], [
-             'Authorization' => 'Bearer ' . $token
+        $response = $this->deleteJson("/api/v1/uploads/" . $type->slug . "/" . $category->id, [], [
+            'Authorization' => 'Bearer ' . $token
         ]);
 
         $response->assertStatus(200)->assertJsonFragment([
@@ -167,4 +219,61 @@ class UploadTest extends TestCase
         $this->assertNull($c);
     }
 
+    function test_upload_image()
+    {
+        $type = UploadType::factory()->createOne();
+        $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
+        Storage::fake('avatars');
+
+        $file = UploadedFile::fake()->image('avatar.jpg');
+
+        $token = $this->loginUser(true);
+        $response = $this->postJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug, [
+            "file" => $file,
+            "description" => $this->faker->sentence
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(201)->assertJsonStructure([
+            "success",
+            "file",
+            "thumbnail",
+            "created_at",
+            "updated_at",
+            "id",
+            "description"
+        ]);
+    }
+
+    function test_upload_file()
+    {
+        $type = UploadType::factory()->createOne();
+        $category = UploadCategory::factory()->createOne(["type_id" => $type->id, "thumbnail" => null]);
+        Storage::fake('avatars');
+
+        $file = UploadedFile::fake()->create('avatar.pdf');
+
+        $token = $this->loginUser(true);
+        $response = $this->postJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug, [
+            "file" => $file,
+            "description" => $this->faker->sentence
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(201)->assertJsonStructure([
+            "success",
+            "file",
+            "thumbnail",
+            "created_at",
+            "updated_at",
+            "id",
+            "description"
+        ]);
+
+        $c = UploadCategory::find($category->id);
+
+        $this->assertEquals($c->thumbnail, $response->json("file"));
+    }
 }

@@ -37,7 +37,7 @@ class CreateUploadsTable extends Migration
         Schema::create('uploads', function (Blueprint $table) {
             $table->id();
             $table->string("file");
-            $table->string("thumbnail");
+            $table->string("thumbnail")->nullable();
             $table->string("description");
             $table->foreignId("category_id")
                 ->constrained("upload_categories")

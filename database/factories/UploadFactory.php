@@ -23,8 +23,8 @@ class UploadFactory extends Factory
     public function definition()
     {
         return [
-            "file" => $this->faker->url,
-            "thumbnail" => $this->faker->url,
+            "file" => $this->faker->url . '/test/test.jpg',
+            "thumbnail" => $this->faker->url . '/test/test.jpg',
             "description" => $this->faker->sentence,
             "category_id" => UploadCategory::factory()->createOne()
         ];
