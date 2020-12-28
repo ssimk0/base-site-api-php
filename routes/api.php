@@ -13,27 +13,30 @@ use Illuminate\Support\Facades\Route;
 Route::middleware([
     'auth:api'
 ])->group(function ($router) {
+    Route::middleware(["can:editor,all"])->group(function() {
+        Route::post("v1/articles", [ArticleController::class, 'create']);
+        Route::put("v1/articles/{article}", [ArticleController::class, 'update']);
+        Route::delete("v1/articles/{article}", [ArticleController::class, 'delete']);
+
+        Route::post("v1/uploads/{type}/{category}", [UploadController::class, 'store']);
+        Route::put("v1/uploads/{type}/{category}/{upload}", [UploadController::class, 'update']);
+        Route::delete("v1/uploads/{type}/{category}/{upload}", [UploadController::class, 'delete']);
+        Route::post("v1/uploads/{type}", [UploadCategoryController::class, 'store']);
+        Route::put("v1/uploads/{type}/{category:id}", [UploadCategoryController::class, 'update']);
+        Route::delete("v1/uploads/{type}/{category:id}", [UploadCategoryController::class, 'delete']);
+    });
+
     Route::get('v1/auth/user', [AuthController::class, 'userInfo']);
+    Route::middleware(["can:admin,all"])->group(function() {
+        Route::put('v1/pages/{category}/{page}', [PageController::class, 'update']);
+        Route::put('v1/pages/{page:id}', [PageController::class, 'update']);
+        Route::post('v1/pages/{category}', [PageController::class, 'create']);
+        Route::delete('v1/pages/{category}/{page}', [PageController::class, 'delete']);
+        Route::delete('v1/pages/{page:id}', [PageController::class, 'delete']);
 
 
-    Route::put('v1/pages/{category}/{page}', [PageController::class, 'update']);
-    Route::put('v1/pages/{page:id}', [PageController::class, 'update']);
-    Route::post('v1/pages/{category}', [PageController::class, 'create']);
-    Route::delete('v1/pages/{category}/{page}', [PageController::class, 'delete']);
-    Route::delete('v1/pages/{page:id}', [PageController::class, 'delete']);
-
-    Route::post("v1/articles", [ArticleController::class, 'create']);
-    Route::put("v1/articles/{article}", [ArticleController::class, 'update']);
-    Route::delete("v1/articles/{article}", [ArticleController::class, 'delete']);
-
-    Route::post("v1/uploads/{type}/{category}", [UploadController::class, 'store']);
-    Route::put("v1/uploads/{type}/{category}/{upload}", [UploadController::class, 'update']);
-    Route::delete("v1/uploads/{type}/{category}/{upload}", [UploadController::class, 'delete']);
-    Route::post("v1/uploads/{type}", [UploadCategoryController::class, 'store']);
-    Route::put("v1/uploads/{type}/{category:id}", [UploadCategoryController::class, 'update']);
-    Route::delete("v1/uploads/{type}/{category:id}", [UploadCategoryController::class, 'delete']);
-
-    Route::post("v1/announcement", [AnnouncementController::class, 'store']);
+        Route::post("v1/announcement", [AnnouncementController::class, 'store']);
+    });
 });
 
 Route::post('v1/auth/logout', [AuthController::class, 'logout']);
