@@ -53,9 +53,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-
-    public function editor()
-    {
-        return Arr::has($this->attributes, "can_edit") ? $this->attributes["can_edit"] : false;
-    }
 }

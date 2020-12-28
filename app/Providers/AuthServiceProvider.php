@@ -28,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::before(function ($user, $ability) {
             if ($ability == 'admin' && $user->is_admin) {
                 return true;
-            } else if ($ability == "editor" && ($user->is_admin || $user->editor())) {
+            } else if ($ability == "editor" && ($user->is_admin || $user->can_edit)) {
                 return true;
             }
         });

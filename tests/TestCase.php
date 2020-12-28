@@ -10,8 +10,8 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    protected function loginUser($admin = false) {
-        $user = User::factory()->create(["is_admin" => $admin]);
+    protected function loginUser($admin = false, $canEdit = false) {
+        $user = User::factory()->create(["is_admin" => $admin, "can_edit" => $canEdit]);
 
         return Auth::login($user);
     }

@@ -108,6 +108,23 @@ class PageTest extends TestCase
        $this->assertEquals($p->title, $page->title);
     }
 
+    function test_page_create_not_permitted()
+    {
+        $pageCategory = PageCategory::factory()->createOne();
+        $page = Page::factory()->makeOne();
+
+        $token = $this->loginUser(false, true);
+
+        $response = $this->postJson("/api/v1/pages/".$pageCategory->slug, [
+            "title" => $page->title,
+            "body" => $page->body
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(403);
+    }
+
     function test_page_update_by_id()
     {
         $page = Page::factory()->createOne();
