@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use Cocur\Slugify\Slugify;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
@@ -29,7 +29,7 @@ class ArticleController extends Controller
         return response()->json($article);
     }
 
-    public function create(Request $request, Slugify $slugify): JsonResponse {
+    public function create(Request $request): JsonResponse {
         $data = $request->validate([
             "title" => "required|min:3|max:255",
             "body" => "required|min:3",
@@ -40,14 +40,14 @@ class ArticleController extends Controller
 
         $article = new Article($data);
         $article->user_id = auth()->user()->id;
-        $article->slug =  $slugify->slugify($data["title"]);
+        $article->slug =  Str::slug($data["title"]);
         $article->save();
 
         return $this->successResponse($article->toArray(), 201);
     }
 
 
-    public function update(Request $request, Article $article, Slugify $slugify): JsonResponse {
+    public function update(Request $request, Article $article): JsonResponse {
         $data = $request->validate([
             "title" => "required|min:3|max:255",
             "body" => "required|min:3",
@@ -56,7 +56,7 @@ class ArticleController extends Controller
             "published" => "boolean",
         ]);
 
-        $data["slug"] =  $slugify->slugify($data["title"]);
+        $data["slug"] =  Str::slug($data["title"]);
         $article->update($data);
 
         return $this->successResponse($article->toArray());

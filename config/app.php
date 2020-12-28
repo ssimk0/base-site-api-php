@@ -174,7 +174,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Cocur\Slugify\Bridge\Laravel\SlugifyServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
     ],
 
@@ -226,7 +225,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Slugify' => Cocur\Slugify\Bridge\Laravel\SlugifyFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
     ],
 
