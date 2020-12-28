@@ -9,4 +9,14 @@ class UploadType extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(UploadCategory::class, 'type_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\UploadCategory;
+use App\Models\UploadType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UploadCategoryFactory extends Factory
@@ -22,7 +23,12 @@ class UploadCategoryFactory extends Factory
     public function definition()
     {
         return [
-            //
+            "name" => $this->faker->name,
+            "slug" => $this->faker->slug,
+            "subpath" => $this->faker->name,
+            "thumbnail" => $this->faker->url,
+            "type_id" => UploadType::factory()->createOne(),
+            "description" => $this->faker->sentence,
         ];
     }
 }

@@ -53,6 +53,9 @@ class ArticleTest extends TestCase
             "slug" => $article->slug,
             "body" => $article->body,
         ]);
+
+        $a = Article::find($article->id);
+        $this->assertEquals($a->viewed, $article->viewed+1);
     }
 
 

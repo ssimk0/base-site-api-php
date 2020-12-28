@@ -25,7 +25,8 @@ class CreateUploadsTable extends Migration
             $table->string("name");
             $table->string("slug");
             $table->string("subpath");
-            $table->string("thumbnail");
+            $table->string("thumbnail")->nullable();
+            $table->string("description");
             $table->foreignId("type_id")
                 ->constrained("upload_types")
                 ->onUpdate("cascade")
@@ -35,7 +36,7 @@ class CreateUploadsTable extends Migration
 
         Schema::create('uploads', function (Blueprint $table) {
             $table->id();
-            $table->string("url");
+            $table->string("file");
             $table->string("thumbnail");
             $table->string("description");
             $table->foreignId("category_id")

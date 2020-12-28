@@ -12,7 +12,7 @@ class ArticleController extends Controller
     public function list(Request $request): JsonResponse {
         $size = $request->query("s");
         $size = intval($size);
-        $paginator = Article::where("published", true)->paginate($size, ['*'], "p");
+        $paginator = Article::where("published", true)->latest()->paginate($size, ['*'], "p");
 
         return response()->json([
             "articles" => $paginator->items(),
@@ -25,7 +25,7 @@ class ArticleController extends Controller
 
     public function detail(Article $article): JsonResponse {
         if (!$article->published) return response()->json([], 404);
-
+        $article->update(["viewed" => $article->viewed+1]);
         return response()->json($article);
     }
 

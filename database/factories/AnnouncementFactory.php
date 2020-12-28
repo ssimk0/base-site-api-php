@@ -2,17 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\UploadType;
+use App\Models\Announcement;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UploadTypeFactory extends Factory
+class AnnouncementFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = UploadType::class;
+    protected $model = Announcement::class;
 
     /**
      * Define the model's default state.
@@ -22,8 +23,8 @@ class UploadTypeFactory extends Factory
     public function definition()
     {
         return [
-            "name" => $this->faker->name,
-            "slug" => $this->faker->slug
+            "message" => $this->faker->sentence,
+            "expire_at" => Carbon::now()->addDay()
         ];
     }
 }
