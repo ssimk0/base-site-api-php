@@ -139,11 +139,11 @@ class UploadController extends Controller
         // Resize image
         $large = $img->resize($width > 1920 ? 1920 : $width, null, function ($constraint) {
             $constraint->aspectRatio();
-        })->encode('jpg', 75);
+        })->orientate()->encode('jpg', 75);
 
         $thumb = Image::make($file)->resize(300, null, function ($constraint) {
             $constraint->aspectRatio();
-        })->encode('jpg', 75);
+        })->orientate()->encode('jpg', 75);
 
         return ["file" => $large, "thumb" => $thumb];
     }
