@@ -65,7 +65,7 @@ class AuthController extends Controller
         $token = Str::random(60);
 
         // create a new token to be sent to the user.
-        DB::table('password_resets')->insert([
+        DB::table('password_resets')->updateOrInsert([
             'email' => $request->email,
             'token' => $token
         ]);
