@@ -94,6 +94,28 @@ class AuthTest extends TestCase
         ]);
     }
 
+
+    public function test_forgot_password_two_times_same_address()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('/api/v1/auth/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertStatus(200)->assertJson([
+            'success' => true,
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertStatus(200)->assertJson([
+            'success' => true,
+        ]);
+    }
+
     public function test_forgot_password_user_not_found()
     {
         $response = $this->postJson('/api/v1/auth/forgot-password', [

@@ -62,13 +62,20 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([], 404);
         }
-        $token = Str::random(60);
-
-        // create a new token to be sent to the user.
-        DB::table('password_resets')->updateOrInsert([
+        $ps = DB::table('password_resets')->where([
             'email' => $request->email,
-            'token' => $token
-        ]);
+        ])->first();
+
+        if ($ps == null) {
+            // create a new token to be sent to the user.
+            $token = Str::random(60);
+            DB::table('password_resets')->updateOrInsert([
+                'email' => $request->email,
+                'token' => $token
+            ]);
+        } else {
+            $token = $ps->token;
+        }
 
         Mail::to($user)->send(new ForgotPassword($token));
 
