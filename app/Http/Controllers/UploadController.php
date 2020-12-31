@@ -67,9 +67,11 @@ class UploadController extends Controller
         $typeSlug = $type->slug;
         $categorySlug = $category->slug;
 
-        Storage::put("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"], $files["file"]->__toString(), 'public');
         if (Arr::has($files, "thumb")) {
-            Storage::put("{$typeSlug}/{$categorySlug}/" . self::SMALL . "/" . $files["filename"], $files["thumb"]->__toString(), 'public');
+            Storage::put("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"], $files["file"], 'public');
+            Storage::put("{$typeSlug}/{$categorySlug}/" . self::SMALL . "/" . $files["filename"], $files["thumb"], 'public');
+        } else {
+            Storage::putFileAs("{$typeSlug}/{$categorySlug}/".self::LARGE, $files['file'], $files['filename'], 'public');
         }
 
         $upload = new Upload([
@@ -145,7 +147,7 @@ class UploadController extends Controller
             $constraint->aspectRatio();
         })->orientate()->encode('jpg', 75);
 
-        return ["file" => $large, "thumb" => $thumb];
+        return ["file" => $large->__toString(), "thumb" => $thumb->__toString()];
     }
 
     protected function download_file(Upload $upload)
