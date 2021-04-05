@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\UploadCategory;
 use App\Models\UploadType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class UploadCategoryController extends Controller
@@ -28,13 +29,13 @@ class UploadCategoryController extends Controller
     {
         $data = $request->validate([
            "name" => 'required|min:3|max:255',
-           "description" => 'required|min:3|max:255',
+           "description" => 'nullable|min:3|max:255',
            "subPath" => 'required|min:3|max:255',
         ]);
 
         $category = new UploadCategory([
             "name" => $data["name"],
-            "description" => $data["description"],
+            "description" => Arr::get($data, "description"),
             "sub_path" => $data["subPath"]
         ]);
         $category->type_id = $type->id;
