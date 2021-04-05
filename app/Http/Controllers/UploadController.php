@@ -94,7 +94,6 @@ class UploadController extends Controller
      * Prepares a image for storing.
      *
      * @param mixed $request
-     * @author Niklas Fandrich
      */
     protected function storeFile($request)
     {
@@ -132,7 +131,6 @@ class UploadController extends Controller
      *
      * @param object $file
      * @return mixed
-     * @author Niklas Fandrich
      */
     protected function resizeImage($file)
     {
