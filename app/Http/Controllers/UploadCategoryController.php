@@ -29,10 +29,14 @@ class UploadCategoryController extends Controller
         $data = $request->validate([
            "name" => 'required|min:3|max:255',
            "description" => 'required|min:3|max:255',
-           "subpath" => 'required|min:3|max:255',
+           "subPath" => 'required|min:3|max:255',
         ]);
 
-        $category = new UploadCategory($data);
+        $category = new UploadCategory([
+            "name" => $data["name"],
+            "description" => $data["description"],
+            "sub_path" => $data["subPath"]
+        ]);
         $category->type_id = $type->id;
         $category->slug = Str::slug($category->name);
         $category->save();

@@ -168,14 +168,14 @@ class UploadTest extends TestCase
         $response = $this->postJson("/api/v1/uploads/" . $type->slug . "/", [
             "description" => $category->description,
             "name" => $category->name,
-            "subpath" => $category->subpath,
+            "subPath" => $category->sub_path,
         ], [
             'Authorization' => 'Bearer ' . $token
         ]);
 
         $response->assertStatus(201)->assertJsonFragment([
             "success" => true,
-            "subpath" => $category->subpath
+            "sub_path" => $category->sub_path
         ]);
     }
 

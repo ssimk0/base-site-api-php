@@ -25,7 +25,7 @@ class UploadCategoryFactory extends Factory
         return [
             "name" => $this->faker->name,
             "slug" => $this->faker->slug,
-            "subpath" => $this->faker->name,
+            "sub_path" => $this->faker->name,
             "thumbnail" => $this->faker->url,
             "type_id" => UploadType::factory()->createOne(),
             "description" => $this->faker->sentence,

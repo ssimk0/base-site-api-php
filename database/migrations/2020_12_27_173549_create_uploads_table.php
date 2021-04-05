@@ -24,7 +24,7 @@ class CreateUploadsTable extends Migration
             $table->id();
             $table->string("name");
             $table->string("slug");
-            $table->string("subpath");
+            $table->string("sub_path");
             $table->string("thumbnail")->nullable();
             $table->string("description");
             $table->foreignId("type_id")
