@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -31,6 +32,7 @@ class ArticleFactory extends Factory
             "published" => $this->faker->boolean,
             "viewed" => $this->faker->numberBetween(0, 100),
             "user_id" => User::factory()->createOne(),
+            "article_category_id" => ArticleCategory::factory()->createOne(),
         ];
     }
 }
