@@ -17,7 +17,7 @@ class ArticleController extends Controller
         $paginator = $category->articles()->where("published", true)->latest()->paginate($size, ['*'], "p");
 
         return response()->json([
-            "articles" => $paginator->items(),
+            "data" => $paginator->items(),
             "page" => $paginator->currentPage(),
             "page_size" => $paginator->perPage(),
             "total" => $paginator->total(),

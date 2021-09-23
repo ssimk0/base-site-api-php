@@ -17,7 +17,7 @@ class UploadCategoryController extends Controller
         $paginator = $category->uploads()->latest()->paginate($size, ['*'], 'p');
 
         return response()->json([
-            "upload" => $paginator->items(),
+            "data" => $paginator->items(),
             "page" => $paginator->currentPage(),
             "page_size" => $paginator->perPage(),
             "total" => $paginator->total(),
