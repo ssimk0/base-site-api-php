@@ -29,7 +29,7 @@ class ArticleController extends Controller
     public function detail(ArticleCategory $category, Article $article): JsonResponse {
         if (!$article->published || $category->id != $article->article_category_id) return response()->json([], 404);
         $article->update(["viewed" => $article->viewed+1]);
-        return response()->json($article);
+        return response()->json($article->load('uploads'));
     }
 
     public function create(ArticleCategory $category, Request $request): JsonResponse {
