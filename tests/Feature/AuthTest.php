@@ -74,7 +74,7 @@ class AuthTest extends TestCase
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertStatus(401);
+        $response->assertStatus(403);
 
         $response->assertJsonFragment([
             'error' => 'Unauthorized'
