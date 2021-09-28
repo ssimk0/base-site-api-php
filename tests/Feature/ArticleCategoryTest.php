@@ -53,7 +53,7 @@ class ArticleCategoryTest extends TestCase
         ]);
 
         $a = ArticleCategory::find($articleCategory->id);
-        $this->assertEquals($a->name, $articleCategory->name);
+        $this->assertEquals($a->name, $newName);
 
     }
 
