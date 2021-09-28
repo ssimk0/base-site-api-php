@@ -83,6 +83,7 @@ class ArticleTest extends TestCase
             "body" => $article->body,
             "short" => $article->short,
             "published" => true,
+            "date" => "2020-11-11",
             "image" => $article->image
         ], [
             'Authorization' => 'Bearer ' . $token
@@ -95,6 +96,7 @@ class ArticleTest extends TestCase
             "published" => true,
             "image" => $article->image,
             "success" => true,
+            "created_at"=> "2020-11-11T00:00:00.000000Z",
         ]);
 
         $id = $response->json("id");
@@ -149,6 +151,7 @@ class ArticleTest extends TestCase
             "body" => $article->body,
             "short" => $article->short,
             "image" => $article->image,
+            "date" => "2020-11-11",
             "published" => $article->published
         ], [
             'Authorization' => 'Bearer ' . $token
@@ -157,6 +160,7 @@ class ArticleTest extends TestCase
         $response->assertStatus(200)->assertJsonFragment([
             "title" => $newTitle,
             "success" => true,
+            "created_at"=> "2020-11-11T00:00:00.000000Z",
         ]);
 
         $a = Article::find($article->id);

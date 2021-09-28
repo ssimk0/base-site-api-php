@@ -40,12 +40,20 @@ class ArticleController extends Controller
             "image" => "url",
             "published" => "boolean",
         ]);
+
+        $dateData = $request->validate([
+            "date" => "date"
+        ]);
+
         $uploadData = $request->validate(["uploads.*" => "exists:App\Models\Upload,id"]);
 
         $article = new Article($data);
         $article->user_id = auth()->user()->id;
         $article->slug =  Str::slug($data["title"]);
         $article->article_category_id = $category->id;
+        if (Arr::get($dateData, "date", false)) {
+            $article->created_at = $dateData["date"];
+        }
         $article->save();
 
         if (Arr::get($uploadData, 'uploads', false)) {
@@ -63,10 +71,18 @@ class ArticleController extends Controller
             "image" => "url",
             "published" => "boolean",
         ]);
+        $dateData = $request->validate([
+            "date" => "date"
+        ]);
+
         $uploadData = $request->validate(["uploads.*" => "exists:App\Models\Upload,id"]);
 
         $data["slug"] =  Str::slug($data["title"]);
         $article->article_category_id = $category->id;
+        if (Arr::get($dateData, "date", false)) {
+            $article->created_at = $dateData["date"];
+        }
+
         $article->update($data);
 
         if (Arr::get($uploadData, 'uploads', false)) {
