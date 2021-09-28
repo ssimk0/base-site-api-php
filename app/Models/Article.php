@@ -13,7 +13,7 @@ class Article extends Model
 
     public function uploads()
     {
-        return $this->belongsToMany(Upload::class, 'article_upload', 'article_id', 'upload_id')->withTimestamps();
+        return $this->belongsToMany(Upload::class, 'article_upload', 'article_id', 'upload_id')->orderBy("description")->withTimestamps();
     }
 
     public function category()

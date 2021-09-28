@@ -14,7 +14,7 @@ class ArticleController extends Controller
     public function list(ArticleCategory $category, Request $request): JsonResponse {
         $size = $request->query("s");
         $size = intval($size);
-        $paginator = $category->articles()->where("published", true)->latest()->paginate($size, ['*'], "p");
+        $paginator = $category->articles()->with('uploads')->where("published", true)->latest()->paginate($size, ['*'], "p");
 
         return response()->json([
             "data" => $paginator->items(),
