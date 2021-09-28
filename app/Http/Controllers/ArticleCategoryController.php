@@ -23,6 +23,11 @@ class ArticleCategoryController extends Controller
         return $this->successResponse($article->toArray(), 201);
     }
 
+    public function list(): JsonResponse {
+        $categories = ArticleCategory::all();
+
+        return response()->json($categories);
+    }
 
     public function update(Request $request, Article $article): JsonResponse {
         $data = $request->validate([

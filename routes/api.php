@@ -54,6 +54,7 @@ Route::get('v1/pages', [PageCategoryController::class, 'list']);
 Route::get('v1/pages/{category}', [PageController::class, 'list']);
 Route::get('v1/pages/{category}/{page}', [PageController::class, 'detail']);
 
+Route::get("v1/articles", [ArticleCategoryController::class, 'list']);
 Route::get('v1/articles/{category:slug}', [ArticleController::class, 'list']);
 Route::get('v1/articles/{category:slug}/{article:slug}', [ArticleController::class, 'detail']);
 
