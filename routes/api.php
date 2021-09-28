@@ -18,7 +18,7 @@ Route::middleware([
 ])->group(function ($router) {
     Route::middleware(["can:editor,all"])->group(function () {
         Route::post("v1/articles", [ArticleCategoryController::class, 'create']);
-        Route::put("v1/articles/{category}", [ArticleCategoryController::class, 'update']);
+        Route::put("v1/articles/{category:slug}", [ArticleCategoryController::class, 'update']);
         Route::delete("v1/articles/{category}", [ArticleCategoryController::class, 'delete']);
         Route::post("v1/articles/{category:slug}", [ArticleController::class, 'create']);
         Route::put("v1/articles/{category:slug}/{article}", [ArticleController::class, 'update']);

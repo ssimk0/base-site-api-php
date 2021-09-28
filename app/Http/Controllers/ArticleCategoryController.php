@@ -29,15 +29,15 @@ class ArticleCategoryController extends Controller
         return response()->json($categories);
     }
 
-    public function update(Request $request, Article $article): JsonResponse {
+    public function update(Request $request, ArticleCategory $category): JsonResponse {
         $data = $request->validate([
             "name" => "required|min:3|max:255",
         ]);
 
-        $data["slug"] =  Str::slug($data["name"]);
-        $article->update($data);
+        $data["slug"] = Str::slug($data["name"]);
+        $category->update($data);
 
-        return $this->successResponse($article->toArray());
+        return $this->successResponse($category->toArray());
     }
 
     public function delete(ArticleCategory $category): JsonResponse

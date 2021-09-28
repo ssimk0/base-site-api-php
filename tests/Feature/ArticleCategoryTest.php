@@ -40,7 +40,7 @@ class ArticleCategoryTest extends TestCase
         $articleCategory = ArticleCategory::factory()->createOne();
 
         $token = $this->loginUser(true);
-        $newName = $this->faker->word;
+        $newName = $this->faker->sentence;
 
         $response = $this->putJson("/api/v1/articles/".$articleCategory->slug, [
             "name" => $newName,
