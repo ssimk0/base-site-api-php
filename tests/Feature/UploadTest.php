@@ -246,6 +246,32 @@ class UploadTest extends TestCase
         ]);
     }
 
+    function test_upload_youtube()
+    {
+        $type = UploadType::factory()->createOne();
+        $category = UploadCategory::factory()->createOne(["type_id" => $type->id]);
+        Storage::fake('avatars');
+
+        $token = $this->loginUser(true);
+        $response = $this->postJson("/api/v1/uploads/" . $type->slug . "/" . $category->slug, [
+            "youtube_suffix" => "youtube",
+            "description" => $this->faker->sentence
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(201)->assertJsonStructure([
+            "success",
+            "file",
+            "created_at",
+            "updated_at",
+            "id",
+            "description"
+        ]);
+
+        $this->assertEquals($response->json('file'), 'https://youtube.com/embed/youtube');
+    }
+
     function test_upload_file()
     {
         $type = UploadType::factory()->createOne();

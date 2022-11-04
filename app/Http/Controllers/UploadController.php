@@ -58,25 +58,28 @@ class UploadController extends Controller
     public function store(UploadType $type, UploadCategory $category, Request $request)
     {
         $data = $request->validate([
-            'file' => 'required|file',
+            'youtube_suffix' => 'required_without_all:file|string',
+            'file' => 'required_without_all:youtube_suffix|file',
             'description' => 'string|min:3|max:255'
         ]);
+        $files = null;
+        if (Arr::has($data, "file")) {
+            $files = $this->storeFile($request);
 
-        $files = $this->storeFile($request);
+            $typeSlug = $type->slug;
+            $categorySlug = $category->slug;
 
-        $typeSlug = $type->slug;
-        $categorySlug = $category->slug;
-
-        if (Arr::has($files, "thumb")) {
-            Storage::put("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"], $files["file"], 'public');
-            Storage::put("{$typeSlug}/{$categorySlug}/" . self::SMALL . "/" . $files["filename"], $files["thumb"], 'public');
-        } else {
-            Storage::putFileAs("{$typeSlug}/{$categorySlug}/".self::LARGE, $files['file'], $files['filename'], 'public');
+            if (Arr::has($files, "thumb")) {
+                Storage::put("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"], $files["file"], 'public');
+                Storage::put("{$typeSlug}/{$categorySlug}/" . self::SMALL . "/" . $files["filename"], $files["thumb"], 'public');
+            } else {
+                Storage::putFileAs("{$typeSlug}/{$categorySlug}/".self::LARGE, $files['file'], $files['filename'], 'public');
+            }
         }
-
+        $youtubeSuffix = Arr::get($data, "youtube_suffix");
         $upload = new Upload([
-            "file" => Storage::url("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"]),
-            "thumbnail" => Arr::has($files, "thumb") ? Storage::url("{$typeSlug}/{$categorySlug}/".self::SMALL."/".$files["filename"]) : null,
+            "file" => Arr::has($data, "youtube_suffix") ?  "https://youtube.com/embed/$youtubeSuffix" : Storage::url("{$typeSlug}/{$categorySlug}/".self::LARGE."/".$files["filename"]),
+            "thumbnail" => $files && Arr::has($files, "thumb") ? Storage::url("{$typeSlug}/{$categorySlug}/".self::SMALL."/".$files["filename"]) : null,
             "description" => Arr::get($data, 'description', ''),
             "category_id" => $category->id,
         ]);
