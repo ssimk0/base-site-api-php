@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\ArticleCategory;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -12,10 +13,26 @@ use Illuminate\Support\Str;
 class ArticleController extends Controller
 {
     public function list(ArticleCategory $category, Request $request): JsonResponse {
+        $request->validate([
+           'createdBefore' => 'nullable|date_format:Y-m-d',
+           'createdAfter' => 'nullable|date_format:Y-m-d',
+           's' => 'nullable|integer'
+        ]);
         $size = $request->query("s");
         $size = intval($size);
-        $paginator = $category->articles()->with('uploads')->where("published", true)->latest()->paginate($size, ['*'], "p");
+        $createdBefore = $request->query("createdBefore", false);
+        $createdAfter = $request->query("createdAfter", false);
+        $query = $category->articles()->with('uploads')->where("published", true)->latest();
 
+        if ($createdBefore) {
+            $query->whereDate('created_at', '<=', Carbon::parse($createdBefore)->format('Y-m-d'));
+        }
+
+        if ($createdAfter) {
+            $query->whereDate('created_at', '>=',  Carbon::parse($createdAfter)->format('Y-m-d'));
+        }
+
+        $paginator = $query->paginate($size, ['*'], "p");
         return response()->json([
             "data" => $paginator->items(),
             "page" => $paginator->currentPage(),
