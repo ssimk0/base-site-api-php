@@ -52,7 +52,7 @@ class PageController extends Controller
         $page = new Page($data);
         $page->page_category_id = $category->id;
         $page->user_id = auth()->user()->id;
-        $page->slug =  Str::slug($page->title);
+        $page->slug = $this->createSlug($page, $page->title);
         $page->save();
 
         return $this->successResponse($page->toArray(), 201);
@@ -71,7 +71,7 @@ class PageController extends Controller
             "body" => "required|min:3"
         ]);
 
-        $data["slug"] = Str::slug($data["title"]);
+        $data["slug"] = $this->createSlug($page, $data["title"]);
         $page->update($data);
 
         return $this->successResponse();

@@ -20,7 +20,7 @@ class ArticleCategoryController extends Controller
         ]);
 
         $article = new ArticleCategory($data);
-        $article->slug = Str::slug($data["name"]);
+        $article->slug = $this->createSlug($article, $data["name"]);
         $article->save();
 
         return $this->successResponse($article->toArray(), 201);
@@ -46,7 +46,7 @@ class ArticleCategoryController extends Controller
             "name" => "required|min:3|max:255",
         ]);
 
-        $data["slug"] = Str::slug($data["name"]);
+        $data["slug"] = $this->createSlug($category, $data["name"]);
         $category->update($data);
 
         return $this->successResponse($category->toArray());

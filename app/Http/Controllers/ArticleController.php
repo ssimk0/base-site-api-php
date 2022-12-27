@@ -66,7 +66,7 @@ class ArticleController extends Controller
 
         $article = new Article($data);
         $article->user_id = auth()->user()->id;
-        $article->slug =  Str::slug($data["title"]);
+        $article->slug =  $this->createSlug($article, $data["title"]);
         $article->article_category_id = $category->id;
         if (Arr::get($dateData, "date", false)) {
             $article->created_at = $dateData["date"];
@@ -94,7 +94,7 @@ class ArticleController extends Controller
 
         $uploadData = $request->validate(["uploads.*" => "exists:App\Models\Upload,id"]);
 
-        $data["slug"] =  Str::slug($data["title"]);
+        $data["slug"] = $this->createSlug($article, $data["title"]);
         $article->article_category_id = $category->id;
         if (Arr::get($dateData, "date", false)) {
             $article->created_at = $dateData["date"];
