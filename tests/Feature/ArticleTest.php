@@ -195,6 +195,49 @@ class ArticleTest extends TestCase
         $this->assertEquals(count($a->uploads), 3);
     }
 
+   function test_article_delete_uploads()
+    {
+        $article = Article::factory()->createOne();
+        $uploads = Upload::factory(3)->create()->pluck("id");
+
+        $token = $this->loginUser(true);
+        $newTitle = $this->faker->title;
+
+        $response = $this->putJson("/api/v1/articles/".$article->category->slug."/".$article->id, [
+            "title" => $newTitle,
+            "body" => $article->body,
+            "short" => $article->short,
+            "image" => $article->image,
+            "published" => $article->published,
+            "uploads" => $uploads
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200)->assertJsonFragment([
+            "title" => $newTitle,
+            "success" => true,
+        ]);
+
+        $a = Article::find($article->id);
+        $this->assertEquals(count($a->uploads), 3);
+
+        $response = $this->putJson("/api/v1/articles/".$article->category->slug."/".$article->id, [
+            "title" => $newTitle,
+            "body" => $article->body,
+            "short" => $article->short,
+            "image" => $article->image,
+            "published" => $article->published,
+            "uploads" => []
+        ], [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200);
+
+        $a = Article::find($article->id);
+        $this->assertEquals(count($a->uploads), 0);
+    }
 
     function test_article_update_with_wrong_category()
     {

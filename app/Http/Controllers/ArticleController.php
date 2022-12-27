@@ -101,9 +101,13 @@ class ArticleController extends Controller
         }
 
         $article->update($data);
-
-        if (Arr::get($uploadData, 'uploads', false)) {
-            $article->uploads()->sync($uploadData["uploads"]);
+        if (Arr::exists($request->all(), 'uploads')) {
+          $uploads = Arr::get($uploadData, 'uploads', []);
+          if ($uploads && count($uploads) > 0) {
+              $article->uploads()->sync($uploadData["uploads"]);
+          } else {
+            $article->uploads()->detach();
+          }
         }
 
         return $this->successResponse($article->toArray());
